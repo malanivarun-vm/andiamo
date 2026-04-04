@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
 interface Props { params: Promise<{ code: string }> }
@@ -10,7 +11,13 @@ export default async function ProcessJoinPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/join/${code}`);
 
-  const { data: trip } = await supabase
+  // Use admin client to look up trip by invite_code — new users aren't in
+  // trip_members yet so RLS would block the regular client here
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  const { data: trip } = await admin
     .from("trips")
     .select("id, organiser_id")
     .eq("invite_code", code)
