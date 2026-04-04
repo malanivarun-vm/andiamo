@@ -38,7 +38,8 @@ export default function NewTripPage() {
       .single();
 
     if (tripError || !trip) {
-      setError("Failed to create trip. Please try again.");
+      console.error("Trip creation error:", tripError);
+      setError(tripError?.message ?? "Failed to create trip. Please try again.");
       setLoading(false);
       return;
     }
