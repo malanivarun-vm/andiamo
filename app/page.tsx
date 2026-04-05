@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function LandingPage() {
   return (
@@ -17,7 +18,15 @@ export default function LandingPage() {
             <span className="text-primary font-bold font-sans text-sm uppercase tracking-wider">Explore</span>
             <span className="text-outline font-sans text-sm uppercase tracking-wider">How it works</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/join"
+              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full border transition-all hover:bg-surface-container"
+              style={{ borderColor: "rgba(0,93,167,0.25)", color: "#005da7" }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>confirmation_number</span>
+              Enter code
+            </Link>
             <Link href="/auth/login" className="hidden sm:block text-sm font-semibold text-primary px-4 py-2">
               Log In
             </Link>
@@ -30,8 +39,11 @@ export default function LandingPage() {
 
       <main className="pt-16">
         {/* Hero Section */}
-        <section className="relative px-6 py-20 lg:py-32 overflow-hidden">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <section
+          className="relative px-6 py-20 lg:py-32 lg:min-h-[90vh] flex items-center overflow-hidden"
+          style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(41,118,199,0.06) 0%, transparent 60%)" }}
+        >
+          <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center lg:items-start lg:pt-8">
             <div className="z-10">
               <div
                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
@@ -40,11 +52,19 @@ export default function LandingPage() {
                 <span className="w-2 h-2 bg-tertiary rounded-full animate-pulse inline-block"></span>
                 5,000+ Groups Planning Now
               </div>
-              <h1 className="font-headline text-5xl lg:text-7xl text-on-surface leading-tight mb-8">
-                The easiest way to go from{" "}
-                <span className="italic text-primary block">&ldquo;We should totally go&rdquo;</span>
-                {" "}to{" "}
-                <span className="italic text-tertiary block">&ldquo;We&rsquo;re actually going.&rdquo;</span>
+              <h1 className="font-headline text-on-surface mb-8" style={{ lineHeight: 1.15 }}>
+                <span className="block text-lg lg:text-xl font-sans font-normal text-on-surface-variant mb-3 not-italic tracking-wide">
+                  The easiest way to go from
+                </span>
+                <span className="italic text-primary" style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}>
+                  &ldquo;We should totally go&rdquo;
+                </span>
+                <span className="block font-headline italic text-on-surface-variant my-1" style={{ fontSize: "clamp(1.1rem, 2vw, 1.4rem)" }}>
+                  — to —
+                </span>
+                <span className="italic text-tertiary" style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}>
+                  &ldquo;We&rsquo;re actually going.&rdquo;
+                </span>
               </h1>
               <p className="text-on-surface-variant text-lg lg:text-xl max-w-xl mb-10 leading-relaxed">
                 Coordinate your group, vote on destinations, and align on budgets — all before anyone opens a browser tab to book.
@@ -68,15 +88,33 @@ export default function LandingPage() {
             </div>
 
             {/* Visual collage */}
-            <div className="relative h-[420px] lg:h-[560px]">
-              <div className="absolute top-0 left-0 w-3/5 h-3/5 rounded-2xl shadow-xl overflow-hidden flex items-center justify-center" style={{ background: "rgba(41,118,199,0.12)" }}>
-                <span className="material-symbols-outlined" style={{ fontSize: "80px", color: "rgba(0,93,167,0.25)" }}>beach_access</span>
+            <div className="relative h-[420px] lg:h-[600px]">
+              <div className="absolute top-0 left-0 w-3/5 h-3/5 rounded-2xl shadow-xl overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"
+                  alt="Beach destination"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
               </div>
-              <div className="absolute top-0 right-0 w-2/5 h-2/5 rounded-2xl shadow-lg mt-8 overflow-hidden flex items-center justify-center" style={{ background: "rgba(255,220,191,0.6)" }}>
-                <span className="material-symbols-outlined" style={{ fontSize: "60px", color: "rgba(133,79,16,0.35)" }}>landscape</span>
+              <div className="absolute top-0 right-0 w-2/5 h-2/5 rounded-2xl shadow-lg mt-8 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80"
+                  alt="Mountain landscape"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 40vw, 20vw"
+                />
               </div>
-              <div className="absolute bottom-0 left-0 w-1/3 h-2/5 rounded-2xl shadow-lg mb-8 overflow-hidden flex items-center justify-center" style={{ background: "rgba(197,224,254,0.4)" }}>
-                <span className="material-symbols-outlined" style={{ fontSize: "50px", color: "rgba(71,97,123,0.35)" }}>restaurant</span>
+              <div className="absolute bottom-0 left-0 w-1/3 h-2/5 rounded-2xl shadow-lg mb-8 overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80"
+                  alt="Restaurant and food"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 33vw, 15vw"
+                />
               </div>
               <div className="absolute bottom-0 right-0 w-3/5 h-3/5 rounded-3xl shadow-2xl bg-surface overflow-hidden z-20 translate-x-2 translate-y-2" style={{ border: "8px solid #fbf9f6" }}>
                 <div className="p-5">
