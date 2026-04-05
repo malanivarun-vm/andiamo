@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { TopAppBar } from "@/components/layout/TopAppBar";
 import { JoinButton } from "./JoinButton";
@@ -27,10 +28,18 @@ export default async function PublicTripPreviewPage({ params }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/preview/${code}`, { cache: "no-store" });
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
-  if (!res.ok) {
+  const { data: rawTrip } = await admin
+    .from("trips")
+    .select("id, name, status, rough_window_start, rough_window_end, destination, destination_poll_deadline, date_poll_deadline")
+    .eq("invite_code", code)
+    .single();
+
+  if (!rawTrip) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center px-6">
         <div className="text-center">
@@ -42,7 +51,41 @@ export default async function PublicTripPreviewPage({ params }: Props) {
     );
   }
 
-  const trip = await res.json();
+  const [
+    { count: committedCount },
+    { count: totalCount },
+    { data: profiles },
+    { data: destinations },
+  ] = await Promise.all([
+    admin.from("trip_members").select("*", { count: "exact", head: true }).eq("trip_id", rawTrip.id).eq("commitment_status", "in"),
+    admin.from("trip_members").select("*", { count: "exact", head: true }).eq("trip_id", rawTrip.id),
+    admin.from("member_profiles").select("vibe_selections").eq("trip_id", rawTrip.id),
+    admin.from("destination_options").select("name").eq("trip_id", rawTrip.id),
+  ]);
+
+  const vibeTally: Record<string, number> = {};
+  profiles?.forEach((p: { vibe_selections: string[] | null }) => {
+    (p.vibe_selections ?? []).forEach((v: string) => {
+      vibeTally[v] = (vibeTally[v] ?? 0) + 1;
+    });
+  });
+  const topVibes = Object.entries(vibeTally)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([vibe]) => vibe);
+
+  const trip = {
+    id: rawTrip.id,
+    name: rawTrip.name,
+    status: rawTrip.status,
+    roughWindowStart: rawTrip.rough_window_start,
+    destination: rawTrip.destination,
+    destinationPollDeadline: rawTrip.destination_poll_deadline,
+    committedCount: committedCount ?? 0,
+    totalCount: totalCount ?? 0,
+    topVibes,
+    destinationOptions: destinations?.map((d: { name: string }) => d.name) ?? [],
+  };
 
   // If signed-in user is already a member, redirect to dashboard
   if (user) {
